@@ -1,16 +1,19 @@
 {
   "name": "app",
-  "module": "index.ts",
+  "module": "main.js",
   "type": "module",
   "scripts": {
-    "dev": "bun run ./app/main.js --watch",
+    "dev": "bun run ./src/main.js --watch",
     "prettier": "bun run prettier --write .",
-    "lint": "bun run eslint --fix ."
+    "lint": "bun run eslint --fix .",
+    "run:prod": "bun run ./src/main.js"
   },
   "private": true,
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/bun": "latest",
     "eslint": "10.10.0",
+    "globals": "7.12.0",
     "prettier": "3.9.7"
   },
   "peerDependencies": {
