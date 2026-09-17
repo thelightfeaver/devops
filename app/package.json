@@ -1,0 +1,22 @@
+{
+  "name": "app",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run ./app/main.js --watch",
+    "prettier": "bun run prettier --write .",
+    "lint": "bun run eslint --fix ."
+  },
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "eslint": "10.10.0",
+    "prettier": "3.9.7"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
