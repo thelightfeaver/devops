@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "bun run ./src/main.js --watch",
-    "prettier": "bun run prettier --write .",
-    "lint": "bun run eslint --fix .",
+    "prettier": "bunx prettier --write .",
+    "lint": "bunx eslint --fix .",
     "run:prod": "bun run ./src/main.js"
   },
   "private": true,
@@ -13,7 +13,7 @@
     "@eslint/js": "^10.0.1",
     "@types/bun": "latest",
     "eslint": "10.10.0",
-    "globals": "7.12.0",
+    "globals": "^15.0.0",
     "prettier": "3.9.7"
   },
   "peerDependencies": {

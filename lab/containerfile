@@ -1,0 +1,12 @@
+FROM oven/bun:alpine
+
+WORKDIR /app
+
+COPY app/package.json ./
+COPY app ./
+RUN bun install --production && apk add --no-cache curl
+
+EXPOSE 3000
+
+CMD ["bun", "run", "run:prod"]
+
