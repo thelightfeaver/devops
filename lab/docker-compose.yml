@@ -27,10 +27,14 @@ services:
     networks:
       - gitea
     volumes:
-      - ./gitea:/data
+      - gitea_data:/data
       - /etc/timezone:/etc/timezone.ro
       - /etc/localtime:/etc/localtime:ro
     ports:
       - "8000:8000"
       - "222:22"
+
+volumes:
+  gitea_data:
+    driver: local
 
