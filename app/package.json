@@ -1,11 +1,13 @@
 {
   "name": "app",
-  "module": "main.js",
+  "main": "src/main.js",
   "type": "module",
   "scripts": {
     "dev": "bun run ./src/main.js --watch",
     "prettier": "bunx prettier --write .",
     "lint": "bunx eslint --fix .",
+    "typecheck": "bunx tsc --noEmit",
+    "test": "bun test",
     "run:prod": "bun run ./src/main.js"
   },
   "private": true,
@@ -14,10 +16,8 @@
     "@types/bun": "latest",
     "eslint": "10.10.0",
     "globals": "^15.0.0",
-    "prettier": "3.9.7"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+    "prettier": "3.9.7",
+    "typescript": "^5.9.0"
   },
   "dependencies": {
     "express": "^5.2.1"

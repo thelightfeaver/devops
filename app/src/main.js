@@ -10,6 +10,11 @@ app.get("/health", (req, res) => {
   res.send("OK");
 });
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
-});
+if (import.meta.main) {
+  const port = Number(process.env.PORT ?? 3000);
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
+export default app;

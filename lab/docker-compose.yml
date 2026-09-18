@@ -1,5 +1,7 @@
+name: devops-local
+
 networks:
-  gitea:
+  lab:
     external: false
 
 services:
@@ -8,6 +10,9 @@ services:
       context: ..
       dockerfile: lab/containerfile
     container_name: app
+    restart: unless-stopped
+    networks:
+      - lab
     ports:
       - "3000:3000"
     healthcheck:
@@ -18,23 +23,63 @@ services:
       start_period: 20s
 
   repository:
-    image: docker.gitea.com/gitea:1.27.3
+    image: gitea/gitea:1.27.3
     container_name: repository
     restart: always
     environment:
       - USER_UID=1000
       - USER_GID=1000
+      - GITEA__SERVER__DOMAIN=localhost
+      - GITEA__SERVER__HTTP_PORT=3000
+      - GITEA__SERVER__ROOT_URL=http://localhost:8000/
+      - GITEA__SERVER__SSH_DOMAIN=localhost
+      - GITEA__SERVER__SSH_PORT=222
+      - GITEA__SERVER__SSH_LISTEN_PORT=22
+      - GITEA__ACTIONS__ENABLED=true
     networks:
-      - gitea
+      - lab
     volumes:
       - gitea_data:/data
       - /etc/timezone:/etc/timezone.ro
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - "8000:8000"
+      - "8000:3000"
       - "222:22"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  pipeline:
+    image: apache/airflow:3.3.2
+    container_name: pipeline
+    restart: always
+    command: ["airflow", "standalone"]
+    environment:
+      - _AIRFLOW_WWW_USER_USERNAME=admin
+      - _AIRFLOW_WWW_USER_PASSWORD=admin1234
+    networks:
+      - lab
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
 volumes:
   gitea_data:
     driver: local
-
