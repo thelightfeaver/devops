@@ -1,3 +1,7 @@
+networks:
+  gitea:
+    external: false
+
 services:
   app:
     build:
@@ -12,3 +16,21 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+
+  repository:
+    image: docker.gitea.com/gitea:1.27.3
+    container_name: repository
+    restart: always
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    networks:
+      - gitea
+    volumes:
+      - ./gitea:/data
+      - /etc/timezone:/etc/timezone.ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "8000:8000"
+      - "222:22"
+
