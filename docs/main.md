@@ -7,6 +7,8 @@ Entorno DevOps local: aplicación de ejemplo más servicios de infraestructura o
 | Servicio | Contenedor | URL | Puerto |
 | --- | --- | --- | --- |
 | Aplicación (Express/Bun) | `app` | http://localhost:3000 | 3000 |
+| Prometheus (métricas) | `prometheus` | http://localhost:9090 | 9090 |
+| Grafana (dashboards) | `grafana` | http://localhost:3001 | 3001 |
 | Gitea (repositorio) | `repository` | http://localhost:8000 | 8000 / 222 (SSH) |
 | Airflow (orquestación) | `pipeline` | http://localhost:8080 | 8080 |
 
@@ -23,6 +25,15 @@ Entorno DevOps local: aplicación de ejemplo más servicios de infraestructura o
 ├── .gitea/workflows/        Pipeline CI/CD (Gitea Actions)
 └── docs/                    Documentación
 ```
+
+## Observabilidad con Prometheus y Grafana
+
+La aplicación expone métricas Prometheus en la ruta `/metrics` y el stack de Docker las scrapea usando Prometheus, mientras Grafana se conecta a Prometheus como datasource por defecto.
+
+- App metrics: http://localhost:3000/metrics
+- Prometheus UI: http://localhost:9090
+- Grafana UI: http://localhost:3001
+- Grafana credentials: `admin` / `admin`
 
 ## Pipeline CI/CD (Gitea Actions)
 

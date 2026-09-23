@@ -15,12 +15,88 @@ services:
       - lab
     ports:
       - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017
+      - MONGODB_DB=devops
+    depends_on:
+      - mongo
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
       timeout: 5s
       retries: 5
       start_period: 20s
+
+  mongo:
+    image: mongo:8.0
+    container_name: mongo
+    restart: unless-stopped
+    networks:
+      - lab
+    ports:
+      - "27017:27017"
+    environment:
+      - GLIBC_TUNABLES=glibc.pthread.rseq=1
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  simulator:
+    build:
+      context: ..
+      dockerfile: lab/simulator.containerfile
+    container_name: simulator
+    restart: unless-stopped
+    networks:
+      - lab
+    environment:
+      - SIM_BASE_URL=http://app:3000
+      - SIM_USERS=5
+      - SIM_DELAY=0.2
+      - SIM_INTERVAL=60
+    depends_on:
+      app:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:v3.4.1
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    networks:
+      - lab
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - app
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: grafana
+    restart: unless-stopped
+    networks:
+      - lab
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
 
   repository:
     image: gitea/gitea:1.27.3
@@ -82,4 +158,10 @@ services:
 
 volumes:
   gitea_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  mongo_data:
     driver: local

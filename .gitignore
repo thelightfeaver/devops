@@ -2,3 +2,5 @@ lab/gitea/
 lab/dags/
 lab/logs/
 lab/act_runner/
+__pycache__/
+*.pyc

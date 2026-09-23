@@ -20,3 +20,11 @@ test("GET /health returns OK", async () => {
   expect(res.status).toBe(200);
   expect(await res.text()).toBe("OK");
 });
+
+test("GET /metrics returns Prometheus metrics", async () => {
+  const res = await fetch(`${base}/metrics`);
+  expect(res.status).toBe(200);
+  expect(res.headers.get("content-type")).toContain("text/plain");
+  const body = await res.text();
+  expect(body).toContain("devops_app_http_requests_total");
+});
